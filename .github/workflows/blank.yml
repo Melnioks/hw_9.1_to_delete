@@ -33,5 +33,5 @@ jobs:
       - name: Run a multi-line script
         run: |
           curl -o- "https://dl-cli.pstmn.io/install/linux64.sh" | sh
-          postman login --with-api-key PMAK-657597f60008ca003f79f9d6-9c5b0f806e2112edde78d284cb6730409a
-          postman collection run "20300544-eba91c07-21ec-4b97-815e-c655c42875cd"
+          postman login --with-api-key PMAK-6575a079020bf10031dd0739-e61afeb0bbde90aa7af7866c6b12396258
+          postman collection run "20300544-1f85877e-a334-408a-9c21-f1442bc5a690"
