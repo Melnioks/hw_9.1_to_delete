@@ -1,0 +1,599 @@
+{
+	"info": {
+		"_postman_id": "9be65293-b8df-4128-a513-542268e02971",
+		"name": "verifier_hw_9.1",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_uid": "20300544-9be65293-b8df-4128-a513-542268e02971"
+	},
+	"item": [
+		{
+			"name": "login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "c115607d-f1f8-41bf-a788-04e02efd0e9a",
+						"exec": [
+							"pm.test(\"Schema is valid\", function () {",
+							"  var schema = {",
+							"    type: \"object\",",
+							"    properties: {",
+							"      id_token: { type: \"string\" }",
+							"    },",
+							"    required: [\"id_token\"]",
+							"  };",
+							"",
+							"  let response = pm.response.json();",
+							"  pm.expect(tv4.validate(response, schema)).to.be.true;",
+							"});",
+							"",
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response has Content-Type header set to 'application/json'\", function () {",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+							"});",
+							"",
+							"pm.test(\"Id token field is present in the response\", function () {",
+							"    const responseData = pm.response.json();",
+							"    pm.expect(responseData.id_token).to.exist;",
+							"});",
+							"",
+							"pm.test(\"Id_token is a non-empty string\", function () {",
+							"    const responseData = pm.response.json();",
+							"    pm.expect(responseData.id_token).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Id_token should be a non-empty string\");",
+							"});",
+							"",
+							"pm.test(\"Id token is a valid JWT token\", function () {",
+							"    const responseData = pm.response.json();",
+							"    pm.expect(responseData.id_token).to.match(/^[A-Za-z0-9-_]+\\.[A-Za-z0-9-_]+\\.[A-Za-z0-9-_]+$/);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"id": "2cdbae0d-4e1e-4221-8c68-95c6fdf14090",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json, text/plain, */*"
+					},
+					{
+						"key": "Accept-Language",
+						"value": "en-US,en;q=0.9,it-IT;q=0.8,it;q=0.7,fr-FR;q=0.6,fr;q=0.5,de-DE;q=0.4,de;q=0.3,ru;q=0.2"
+					},
+					{
+						"key": "Connection",
+						"value": "keep-alive"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Origin",
+						"value": "https://sqlverifier-50d286d70656.herokuapp.com"
+					},
+					{
+						"key": "Referer",
+						"value": "https://sqlverifier-50d286d70656.herokuapp.com/login"
+					},
+					{
+						"key": "Sec-Fetch-Dest",
+						"value": "empty"
+					},
+					{
+						"key": "Sec-Fetch-Mode",
+						"value": "cors"
+					},
+					{
+						"key": "Sec-Fetch-Site",
+						"value": "same-origin"
+					},
+					{
+						"key": "User-Agent",
+						"value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36"
+					},
+					{
+						"key": "sec-ch-ua",
+						"value": "\"Google Chrome\";v=\"119\", \"Chromium\";v=\"119\", \"Not?A_Brand\";v=\"24\""
+					},
+					{
+						"key": "sec-ch-ua-mobile",
+						"value": "?0"
+					},
+					{
+						"key": "sec-ch-ua-platform",
+						"value": "\"macOS\""
+					},
+					{
+						"key": "x-mock-match-request-headers",
+						"value": "400",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"{{adminLogin}}\",\n    \"password\": \"{{adminPassword}}\",\n    \"rememberMe\": false\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/authenticate",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"authenticate"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get tasks list",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "a74ef6f7-6b34-4db0-a7bd-8b1d0f7f7eeb",
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response is an array of objects\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.be.an('array').that.is.not.empty;",
+							"    jsonData.forEach(function(task) {",
+							"        pm.expect(task).to.be.an('object').that.has.all.keys('id', 'text', 'answer', 'title');",
+							"    });",
+							"});",
+							"",
+							"pm.test(\"Each task object has a non-negative integer ID\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.be.an('array');",
+							"    responseData.forEach(function(task) {",
+							"        pm.expect(task.id).to.be.a('number').and.to.be.at.least(0);",
+							"    });",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "880e926a-7e93-48e8-ab7f-ed8ed61a08d1",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"id": "14dff4ed-4403-414b-acdd-432b19621a50",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{id_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "accept",
+						"value": "*/*"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/api/tasks?page=0&size=100",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"tasks"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "0"
+						},
+						{
+							"key": "size",
+							"value": "100"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create a task",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "f5c77db4-2ad2-41e3-b2b7-f1e00eb6cfe4",
+						"exec": [
+							"pm.test(\"Schema is valid\", function () {",
+							"  var schema = {",
+							"    type: \"object\",",
+							"    properties: {",
+							"      id: { type: \"number\" },",
+							"      text: { type: \"string\" },",
+							"      answer: { type: \"string\" },",
+							"      title: { type: \"string\" }",
+							"    },",
+							"    required: [\"id\", \"text\", \"answer\", \"title\"],",
+							"  };",
+							"",
+							"  let response = pm.response.json();",
+							"  pm.expect(tv4.validate(response, schema)).to.be.true;",
+							"});",
+							"",
+							"let jsonBody = pm.response.json();",
+							"",
+							"pm.collectionVariables.set(\"id\", jsonBody.id);",
+							"",
+							"pm.test(\"Response status code is 201\", function () {",
+							"  pm.response.to.have.status(201);",
+							"});",
+							"",
+							"pm.test(\"Response has required fields\", function () {",
+							"  const responseData = pm.response.json();",
+							"  pm.expect(responseData).to.be.an('object');",
+							"  pm.expect(responseData).to.have.property('id').that.is.a('number');",
+							"  pm.expect(responseData).to.have.property('text').that.is.a('string');",
+							"  pm.expect(responseData).to.have.property('answer').that.is.a('string');",
+							"  pm.expect(responseData).to.have.property('title').that.is.a('string');",
+							"});",
+							"",
+							"pm.test(\"ID is a non-negative integer\", function () {",
+							"  const responseData = pm.response.json();",
+							"  pm.expect(responseData).to.be.an('object');",
+							"  pm.expect(responseData.id).to.exist.and.to.be.a('number');",
+							"  pm.expect(responseData.id).to.be.at.least(0);",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"id": "455e64f4-7263-4fef-a9ec-9af63ca6adcc",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{id_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "accept",
+						"value": "*/*"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"text\": \"some text\",\n  \"answer\": \"string\",\n  \"title\": \"string\"\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/tasks",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"tasks"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "change task text",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "86367070-513c-4d0c-953e-562e81bf3b0d",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "34becc17-2e04-4d87-b0db-4fc0bc196c22",
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response is an object with id, text, answer, and title properties\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.be.an('object').that.has.all.keys('id', 'text', 'answer', 'title');",
+							"});",
+							"",
+							"pm.test(\"Id is a non-negative integer\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData.id).to.be.a('number').and.to.be.at.least(0);",
+							"});",
+							"",
+							"pm.test(\"Text and title are non-empty strings\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.be.an('object');",
+							"    pm.expect(responseData.text).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Text should not be empty\");",
+							"    pm.expect(responseData.title).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Title should not be empty\");",
+							"});",
+							"",
+							"pm.test(\"Answer is a non-empty string or null\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.be.an('object');",
+							"    pm.expect(responseData.answer).to.satisfy((answer) => {",
+							"        return typeof answer === 'string' || answer === null;",
+							"    }, \"Answer should be a non-empty string or null\");",
+							"});",
+							"",
+							"pm.test(\"No unexpected properties in the response body\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.be.an('object');",
+							"    pm.expect(Object.keys(responseData)).to.have.lengthOf(4);",
+							"});",
+							"",
+							"pm.test(\"Id property should be unique and not repeated\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.be.an('object');",
+							"    pm.expect(responseData.id).to.exist.and.to.be.a('number');",
+							"    pm.expect(responseData.id).to.not.equal(pm.iterationData.get(\"previousId\"), \"Id should be unique\");",
+							"    pm.iterationData.set(\"previousId\", responseData.id);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"id": "2f8b53bb-5009-4a9f-91c8-d8b80a17017f",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{id_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "accept",
+						"value": "*/*"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"id\": \"{{id}}\",\n  \"text\": \"some new new text\"\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/tasks/{{id}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"tasks",
+						"{{id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get task data",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "c478eedb-8e81-4705-9637-fd08dcf8a02c",
+						"exec": [
+							"pm.sendRequest({",
+							"    url: `${pm.collectionVariables.get('baseUrl')}/api/tasks/${pm.collectionVariables.get('id')}`,",
+							"    method: \"DELETE\",",
+							"    header: {",
+							"        \"Authorization\": \"Bearer \" + pm.collectionVariables.get('id_token'),",
+							"        \"Accept\": \"*/*\"",
+							"    }",
+							"}, function (err, response) {",
+							"    pm.test(\"Response status code is 200\", function () {",
+							"        pm.response.to.have.status(200);",
+							"    });",
+							"",
+							"    pm.test(\"Response is a valid JSON\", function () {",
+							"        pm.response.to.be.json;",
+							"    });",
+							"",
+							"    pm.test(\"Response body has id, text, answer, and title properties\", function () {",
+							"        const responseData = pm.response.json();",
+							"        pm.expect(responseData).to.have.property('id');",
+							"        pm.expect(responseData).to.have.property('text');",
+							"        pm.expect(responseData).to.have.property('answer');",
+							"        pm.expect(responseData).to.have.property('title');",
+							"    });",
+							"});",
+							"",
+							"pm.collectionVariables.unset(\"id\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"id": "ec5a925e-3884-408b-95e2-3aaa46377361",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{id_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "accept",
+						"value": "*/*"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/api/tasks/{{id}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"tasks",
+						"{{id}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "f308b363-1381-4b33-a16b-eff2e446e820",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "78e61ca7-eced-4b7d-91e3-01e9771d3733",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "3a9d54f6-694a-4212-b833-e8289111bc44",
+			"key": "baseUrl",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"id": "345016f8-11e4-4fab-9d60-f6a7ed7dd027",
+			"key": "adminLogin",
+			"value": "admin",
+			"type": "string"
+		},
+		{
+			"id": "d807769a-1a8e-42da-a8bf-5246dae6dd52",
+			"key": "adminPassword",
+			"value": "admin",
+			"type": "string"
+		},
+		{
+			"id": "07bc77bf-d4de-4711-947f-363ca936f12d",
+			"key": "id_token",
+			"value": "{{id_token}}",
+			"type": "string"
+		},
+		{
+			"id": "be473bc1-13fc-4723-8663-01622540adca",
+			"key": "currentAmountOfTasks",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "4b28473b-10e3-482e-a6da-0381612a7981",
+			"key": "targetNumberOfTasks",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "0787ad4c-6655-4800-9170-71ebaef54319",
+			"key": "ids",
+			"value": ""
+		},
+		{
+			"id": "740ce6e1-a289-4663-aed9-c96f0af60a2d",
+			"key": "lastID",
+			"value": ""
+		}
+	]
+}
