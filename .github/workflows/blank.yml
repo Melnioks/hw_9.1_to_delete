@@ -32,4 +32,6 @@ jobs:
       # Runs a set of commands using the runners shell
       - name: Run a multi-line script
         run: |
-          https://api.postman.com/collections/20300544-7fa01b0b-8ca6-4753-9ed1-fa633169e88e?access_key=PMAT-01HH9KTKZJQPP9V0ZQRMM1TN22
+          curl -o- "https://dl-cli.pstmn.io/install/linux64.sh" | sh,
+          postman login --with-api-key PMAK-65785abb4d515979669d6a81-1f4c71c39a178a6a0e561f933a35c190cf,
+          postman collection run "postman/collections/verifier_hw_9.1.json"
