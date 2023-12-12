@@ -2,4 +2,4 @@
 
 
 ## ![example event parameter]
-## (.github/workflows/blank.yml?event=push)
+## (https://github.com/KsuKuper/hw_9.1/actions/workflows/blank.yml?event=push)
