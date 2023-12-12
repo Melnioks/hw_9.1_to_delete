@@ -32,6 +32,4 @@ jobs:
       # Runs a set of commands using the runners shell
       - name: Run a multi-line script
         run: |
-          curl -o- "https://dl-cli.pstmn.io/install/linux64.sh" | sh
-          postman login --with-api-key PMAK-6575a32846f7e2003fb93c1f-0f73a3021528964e49e7e18cdbd516163c
-          postman collection run "20300544-ea2c342f-022a-4445-a7f8-21ab5d1a459e"
+          https://api.postman.com/collections/20300544-7fa01b0b-8ca6-4753-9ed1-fa633169e88e?access_key=PMAT-01HH9KTKZJQPP9V0ZQRMM1TN22
