@@ -1,4 +1,4 @@
 # hw_9.1
 
-## ![example workflow]
-## https://github.com/KsuKuper/hw_9.1/actions
+## ![example event parameter]
+## (https://github.com/github/docs/actions/workflows/main.yml/badge.svg?event=push)
